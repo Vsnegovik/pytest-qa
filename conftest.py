@@ -23,18 +23,19 @@ def page(browser):
 
 @pytest.fixture(scope="function")
 def authenticated_page():
-    """Логинимся в Keycloak через браузер перед каждым тестом"""
-    username = os.getenv("KEYCLOAK_USERNAME")
-    password = os.getenv("KEYCLOAK_PASSWORD")
 
     with sync_playwright() as p:
+        """Логинимся в Keycloak через браузер перед каждым тестом"""
+        username = os.getenv("KEYCLOAK_USERNAME")
+        password = os.getenv("KEYCLOAK_PASSWORD")
         browser = p.chromium.launch(headless=False)
         context = browser.new_context()
         page = context.new_page()
 
         # Переход на страницу логина Keycloak
-        page.goto("https://keycloak.example.com/auth/realms/myrealm/protocol/openid-connect/auth?client_id=myclient&response_type=code")
-
+        page.goto("https://auth.infra.cluster.kznexpess.com/realms/kazanexpress/protocol/openid-connect/auth?approval_prompt=force&client_id=developer-oauth-client&redirect_uri=https%3A%2F%2Foauth2.dev.cluster.kznexpess.com%2Foauth2%2Fcallback&response_type=code&scope=openid+profile+email&state=hkWV5Lk6yD88rcXaZtDSb7Kp2JGWKyM6HfgRWaoGdLY%3Ahttps%3A%2F%2Fwms-frontend-core-release-dev.dev.cluster.kznexpess.com%2Fassembly%2FACTIVE")
+        page.click("#social-magnit-oidc")
+        page.wait_for_load_state("networkidle")
         # Ввод логина и пароля
         page.fill("#username", username)
         page.fill("#password", password)
